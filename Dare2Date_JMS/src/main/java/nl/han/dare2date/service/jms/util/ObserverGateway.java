@@ -1,7 +1,6 @@
 package nl.han.dare2date.service.jms.util;
 
 import java.util.Observer;
-
 import javax.jms.*;
 import javax.naming.NamingException;
 

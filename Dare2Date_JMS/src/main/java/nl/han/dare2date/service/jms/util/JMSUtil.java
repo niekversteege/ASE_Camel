@@ -2,7 +2,6 @@ package nl.han.dare2date.service.jms.util;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;

@@ -1,7 +1,6 @@
 package nl.han.dare2date.service.jms.util;
 
 import java.io.Serializable;
-
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -12,91 +11,94 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.naming.NamingException;
+import org.apache.log4j.Logger;
 
 /**
- * 
+ *
  * @author mdkr
  *
  * Replier does not need the replyQueue, it is included in the message.
  */
 public abstract class Replier implements MessageListener {
 
-	private Session session;
-	private MessageProducer invalidProducer;
+    private final Logger log = Logger.getLogger(getClass().getName());
+    
+    private Session session;
+    private MessageProducer invalidProducer;
 
-	protected Replier(Connection connection, String requestQueueName, String invalidQueueName)
-		throws JMSException, NamingException {
-		initialize(connection, requestQueueName, invalidQueueName);
-	}
+    protected Replier(Connection connection, String requestQueueName, String invalidQueueName)
+            throws JMSException, NamingException {
+        initialize(connection, requestQueueName, invalidQueueName);
+    }
 
-	protected void initialize(Connection connection, String requestQueueName, String invalidQueueName)
-		throws NamingException, JMSException {
-		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-		Destination requestQueue = JMSUtil.getDestinationForQueue(requestQueueName);
-		Destination invalidQueue = JMSUtil.getDestinationForQueue(invalidQueueName);
-		MessageConsumer requestConsumer = session.createConsumer(requestQueue);
-		MessageListener listener = this;
-		requestConsumer.setMessageListener(listener);
-		invalidProducer = session.createProducer(invalidQueue);
-	}
+    protected void initialize(Connection connection, String requestQueueName, String invalidQueueName)
+            throws NamingException, JMSException {
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Destination requestQueue = JMSUtil.getDestinationForQueue(requestQueueName);
+        Destination invalidQueue = JMSUtil.getDestinationForQueue(invalidQueueName);
+        MessageConsumer requestConsumer = session.createConsumer(requestQueue);
+        MessageListener listener = this;
+        requestConsumer.setMessageListener(listener);
+        invalidProducer = session.createProducer(invalidQueue);
+    }
 
-	public void onMessage(Message message) {
-		try {
-			if ((message instanceof ObjectMessage) && (message.getJMSReplyTo() != null)) {
-				ObjectMessage requestMessage = (ObjectMessage) message;
+    public void onMessage(Message message) {
+        try {
+            if ((message instanceof ObjectMessage) && (message.getJMSReplyTo() != null)) {
+                ObjectMessage requestMessage = (ObjectMessage) message;
 
-				System.out.println("Received request");
-				System.out.println("\tTime:       " + System.currentTimeMillis() + " ms");
-				System.out.println("\tMessage ID: " + requestMessage.getJMSMessageID());
-				System.out.println("\tCorrel. ID: " + requestMessage.getJMSCorrelationID());
-				System.out.println("\tReply to:   " + requestMessage.getJMSReplyTo());
-				System.out.println("\tContents:   " + requestMessage.getObject());
+                log.info("Received request");
+                log.info("\tTime:       " + System.currentTimeMillis() + " ms");
+                log.info("\tMessage ID: " + requestMessage.getJMSMessageID());
+                log.info("\tCorrel. ID: " + requestMessage.getJMSCorrelationID());
+                log.info("\tReply to:   " + requestMessage.getJMSReplyTo());
+                log.info("\tContents:   " + requestMessage.getObject());
 
-				Serializable contents = requestMessage.getObject();
-				
-				handleMessage(contents);
-				
-				Destination replyDestination = message.getJMSReplyTo();
-				MessageProducer replyProducer = session.createProducer(replyDestination);
+                Serializable contents = requestMessage.getObject();
 
-				ObjectMessage replyMessage = getReplyMessage();
-				replyMessage.setJMSCorrelationID(requestMessage.getJMSMessageID());
-				replyProducer.send(replyMessage);
+                handleMessage(contents);
 
-				System.out.println("Sent reply");
-				System.out.println("\tTime:       " + System.currentTimeMillis() + " ms");
-				System.out.println("\tMessage ID: " + replyMessage.getJMSMessageID());
-				System.out.println("\tCorrel. ID: " + replyMessage.getJMSCorrelationID());
-				System.out.println("\tReply to:   " + replyMessage.getJMSReplyTo());
-				System.out.println("\tContents:   " + replyMessage.getObject());
-			} else {
-				System.out.println("Invalid message detected");
-				System.out.println("\tType:       " + message.getClass().getName());
-				System.out.println("\tTime:       " + System.currentTimeMillis() + " ms");
-				System.out.println("\tMessage ID: " + message.getJMSMessageID());
-				System.out.println("\tCorrel. ID: " + message.getJMSCorrelationID());
-				System.out.println("\tReply to:   " + message.getJMSReplyTo());
+                Destination replyDestination = message.getJMSReplyTo();
+                MessageProducer replyProducer = session.createProducer(replyDestination);
 
-				message.setJMSCorrelationID(message.getJMSMessageID());
-				invalidProducer.send(message);
+                ObjectMessage replyMessage = getReplyMessage();
+                replyMessage.setJMSCorrelationID(requestMessage.getJMSMessageID());
+                replyProducer.send(replyMessage);
 
-				System.out.println("Sent to invalid message queue");
-				System.out.println("\tType:       " + message.getClass().getName());
-				System.out.println("\tTime:       " + System.currentTimeMillis() + " ms");
-				System.out.println("\tMessage ID: " + message.getJMSMessageID());
-				System.out.println("\tCorrel. ID: " + message.getJMSCorrelationID());
-				System.out.println("\tReply to:   " + message.getJMSReplyTo());
-			}
-		} catch (JMSException e) {
-			e.printStackTrace();
-		}
-	}
+                log.info("Sent reply");
+                log.info("\tTime:       " + System.currentTimeMillis() + " ms");
+                log.info("\tMessage ID: " + replyMessage.getJMSMessageID());
+                log.info("\tCorrel. ID: " + replyMessage.getJMSCorrelationID());
+                log.info("\tReply to:   " + replyMessage.getJMSReplyTo());
+                log.info("\tContents:   " + replyMessage.getObject());
+            } else {
+                log.info("Invalid message detected");
+                log.info("\tType:       " + message.getClass().getName());
+                log.info("\tTime:       " + System.currentTimeMillis() + " ms");
+                log.info("\tMessage ID: " + message.getJMSMessageID());
+                log.info("\tCorrel. ID: " + message.getJMSCorrelationID());
+                log.info("\tReply to:   " + message.getJMSReplyTo());
 
-	public abstract ObjectMessage getReplyMessage();
+                message.setJMSCorrelationID(message.getJMSMessageID());
+                invalidProducer.send(message);
 
-	public abstract void handleMessage(Serializable contents);
+                log.info("Sent to invalid message queue");
+                log.info("\tType:       " + message.getClass().getName());
+                log.info("\tTime:       " + System.currentTimeMillis() + " ms");
+                log.info("\tMessage ID: " + message.getJMSMessageID());
+                log.info("\tCorrel. ID: " + message.getJMSCorrelationID());
+                log.info("\tReply to:   " + message.getJMSReplyTo());
+            }
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public Session getSession() {
-		return session;
-	}
+    public abstract ObjectMessage getReplyMessage();
+
+    public abstract void handleMessage(Serializable contents);
+
+    public Session getSession() {
+        return session;
+    }
 }
