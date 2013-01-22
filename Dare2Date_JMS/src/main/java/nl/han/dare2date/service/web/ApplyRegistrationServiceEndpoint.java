@@ -22,6 +22,16 @@ public class ApplyRegistrationServiceEndpoint {
 	@SuppressWarnings( { "unchecked", "deprecation" })
 	@PayloadRoot(localPart = "ApplyRegistrationRequest", namespace = "http://www.han.nl/schemas/messages")
 	public ApplyRegistrationResponse applyRegistration(ApplyRegistrationRequest req) {
-		return new ApplyRegistrationResponse();
+            
+            ApplyRegistrationResponse ret = new ApplyRegistrationResponse();
+            boolean success = false;
+            //check if valid
+            
+            //invalid -> ValidateCreditcardservice
+            //valid -> ConfirmRegistrationService
+            
+            ret.setRegistration(req.getRegistration());
+            ret.getRegistration().setSuccesFul(success);
+            return ret;
 	}
 }

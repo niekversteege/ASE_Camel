@@ -23,4 +23,36 @@
             </sequence>
         </complexType>	
 	</element>
+        <element name="ValidateCreditcardRequest">
+        <complexType>
+            <sequence>
+                <element name="creditcard" type="types:Creditcard" minOccurs="1" maxOccurs="1"/>
+            </sequence>
+        </complexType>	
+	</element>
+
+	<element name="ValidateCreditcardResponse">
+        <complexType>
+            <sequence>
+                <element name="creditcard" type="types:Creditcard" minOccurs="1" maxOccurs="1"/>
+                <element name="valid" type="boolean" minOccurs="1" maxOccurs="1" />
+            </sequence>
+        </complexType>	
+	</element>
+
+	<element name="ConfirmRegistrationRequest">
+        <complexType>
+            <sequence>
+                <element name="registration" type="types:Registration" minOccurs="1" maxOccurs="1"/>
+            </sequence>
+        </complexType>	
+	</element>
+
+	<element name="ConfirmRegistrationResponse">
+        <complexType>
+            <sequence>
+                <element name="registration" type="types:Registration" minOccurs="1" maxOccurs="1"/>
+            </sequence>
+        </complexType>	
+	</element>
 </schema>
