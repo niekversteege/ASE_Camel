@@ -16,7 +16,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 @Endpoint
 public class ApplyRegistrationServiceEndpoint {
 
-    private static final String REG_SUCCESSFUL_TOPIC = "RegistrationConfirmationTopic";
     private Logger log = Logger.getLogger(getClass().getName());
     private Marshaller marshaller;
     private Unmarshaller unmarshaller;
@@ -60,11 +59,11 @@ public class ApplyRegistrationServiceEndpoint {
 
     private void notifyEveryone(Registration reg) {
         try {
-            ConfirmRegistrationService confirm = new ConfirmRegistrationService(REG_SUCCESSFUL_TOPIC);
+            ConfirmRegistrationService confirm = new ConfirmRegistrationService();
             confirm.confirm(reg);
 
         } catch (JMSException | NamingException ex) {
-            log.error("", ex);
+            log.error(ex.toString(), ex);
         }
     }
 }
