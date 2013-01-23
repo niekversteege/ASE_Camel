@@ -1,12 +1,16 @@
 package nl.han.dare2date.service.web;
 
 import java.util.logging.Level;
+import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import nl.han.dare2date.applyregistrationservice.ApplyRegistrationRequest;
 import nl.han.dare2date.applyregistrationservice.ApplyRegistrationResponse;
 import nl.han.dare2date.applyregistrationservice.Creditcard;
 import nl.han.dare2date.applyregistrationservice.Registration;
+import nl.han.dare2date.service.jms.ValidateCreditcardRequestor;
+import nl.han.dare2date.service.jms.util.JMSUtil;
+import nl.han.dare2date.service.jms.util.Queues;
 import org.apache.log4j.Logger;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
@@ -30,15 +34,21 @@ public class ApplyRegistrationServiceEndpoint {
     public ApplyRegistrationResponse applyRegistration(ApplyRegistrationRequest req) {
         boolean success = false;
         System.out.println("Yz: REQUEST");
-        ApplyRegistrationResponse ret = new ApplyRegistrationResponse();
+        ApplyRegistrationResponse response = new ApplyRegistrationResponse();
+        
         Creditcard cc = req.getRegistration().getUser().getCard();
 
         //check if valid
-        //Connection con = JMSUtil.getConnection();
-        ValidateCreditcardService vccs;
         try {
-            vccs = new ValidateCreditcardService();
-            success = vccs.validate(cc);
+            log.debug("Probeer request::");
+            Connection c = JMSUtil.getConnection();
+             ValidateCreditcardRequestor vcr = new ValidateCreditcardRequestor(
+                    c, Queues.REQUEST_QUEUE,
+                    Queues.REPLY_QUEUE, Queues.INVALID_QUEUE, cc);
+             vcr.send();
+             vcr.receiveSync();
+             success = Boolean.parseBoolean( vcr.getResponse().toString() );
+             c.close();
 
         } catch (JMSException ex) {
             java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, null, ex);
@@ -47,14 +57,11 @@ public class ApplyRegistrationServiceEndpoint {
         }
 
 
-
-
-        //invalid -> ValidateCreditcardservice
-        //valid -> ConfirmRegistrationService
-
-        ret.setRegistration(req.getRegistration());
-        ret.getRegistration().setSuccesFul(success);
-        return ret;
+        
+        
+        response.setRegistration(req.getRegistration());
+        response.getRegistration().setSuccesFul(success);
+        return response;
     }
 
     private void notifyEveryone(Registration reg) {
