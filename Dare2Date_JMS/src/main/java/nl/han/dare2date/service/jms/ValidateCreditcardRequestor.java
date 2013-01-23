@@ -5,6 +5,8 @@
 package nl.han.dare2date.service.jms;
 
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -37,6 +39,13 @@ public class ValidateCreditcardRequestor extends Requestor{
 
     @Override
     public Serializable getResponse() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            ObjectMessage m = this.getReplyMessage();
+            return m.getObject().toString();
+        } catch (JMSException ex) {
+            Logger.getLogger(ValidateCreditcardRequestor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+        
     }
 }

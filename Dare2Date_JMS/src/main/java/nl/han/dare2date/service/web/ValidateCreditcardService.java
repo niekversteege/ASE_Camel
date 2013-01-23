@@ -21,7 +21,7 @@ import nl.han.dare2date.service.jms.util.Replier;
  */
 public class ValidateCreditcardService extends Replier implements Queues {
 
-    private boolean lastvalid=false;
+    private boolean lastvalid;
     /**
      *
      */
@@ -33,25 +33,9 @@ public class ValidateCreditcardService extends Replier implements Queues {
         super(c, REQUEST_QUEUE, INVALID_QUEUE);
     }
 
-    public boolean validate(Creditcard cc) {
-        try {
-            Connection c = JMSUtil.getConnection();
-             ValidateCreditcardRequestor vcr = new ValidateCreditcardRequestor(
-                    c, Queues.REQUEST_QUEUE,
-                    Queues.REPLY_QUEUE, Queues.INVALID_QUEUE, cc);
-             vcr.send();
-             vcr.receiveSync();
-             c.close();
-             return Boolean.parseBoolean(vcr.getResponse().toString());
-        } catch (NamingException ex) {
-            Logger.getLogger(ValidateCreditcardService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (JMSException ex) {
-            Logger.getLogger(ValidateCreditcardService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
+
     public boolean validatecc(Creditcard cc){
-        return (cc.getCvc() == 1111 && cc.getNumber() == 1111);
+        return (cc.getCvc() == 1234 && cc.getNumber() == 5678);
     }
     @Override
     public ObjectMessage getReplyMessage() {
