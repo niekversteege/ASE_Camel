@@ -22,7 +22,7 @@ public class SubscriberMessageListener implements MessageListener {
     @Override
     public void onMessage(Message msg) {
         
-        log.debug("Received message:");
+        log.info("Received message:");
         
         if (msg instanceof ObjectMessage) {
             printMessage((ObjectMessage) msg);
@@ -58,6 +58,6 @@ public class SubscriberMessageListener implements MessageListener {
     }
     
     private void printMessageContent(String string) {
-        log.debug("\t" + string);
+        log.info("\t" + string);
     }
 }

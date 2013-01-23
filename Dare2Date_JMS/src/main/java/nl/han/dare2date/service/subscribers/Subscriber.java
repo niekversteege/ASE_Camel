@@ -32,13 +32,13 @@ public class Subscriber {
     SubscriberMessageListener listener = null;
 
     public Subscriber(String name) {
-        log.debug("Starting external service that subscribes to the ApplyRegistrationService.");
-        log.debug("\tName: " + name);
+        log.info("Starting external service that subscribes to the ApplyRegistrationService.");
+        log.info("\tName: " + name);
     }
 
     public void subscribeToTopic(String topicString) {
 
-        log.debug("Attmpting to subscribe to topic: " + topicString);
+        log.info("Attmpting to subscribe to topic: " + topicString);
 
         initContext();
         initTopicConnectionFactory(topicString);
@@ -66,7 +66,7 @@ public class Subscriber {
     private void initTopic(String topicString) {
         try {
             topic = (Topic) context.lookup(topicString);
-            log.debug("Created topic from JDNI: " + topic.getTopicName());
+            log.info("Created topic from JDNI: " + topic.getTopicName());
         } catch (JMSException | NamingException ex) {
             log.error("Error creating topic: " + ex.toString(), ex);
         }
@@ -81,6 +81,9 @@ public class Subscriber {
             listener = new SubscriberMessageListener();
             topicSubscriber.setMessageListener(listener);
             topicConnection.start();
+            
+            log.info("Connection opened:\n\t" + topicConnection.toString());
+            
         } catch (JMSException ex) {
             log.error("TopicConnection failed: " + ex.toString(), ex);
         }
