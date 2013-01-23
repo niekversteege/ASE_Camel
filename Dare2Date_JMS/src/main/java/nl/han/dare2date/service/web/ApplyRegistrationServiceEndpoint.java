@@ -33,17 +33,22 @@ public class ApplyRegistrationServiceEndpoint {
             System.out.println("Yz: REQUEST");
             ApplyRegistrationResponse ret = new ApplyRegistrationResponse();
             Creditcard cc = req.getRegistration().getUser().getCard();
-        try {
+        
             //check if valid
             //Connection con = JMSUtil.getConnection();
-            ValidateCreditcardService vccs = new ValidateCreditcardService();
+            ValidateCreditcardService vccs;
+        try {
+            vccs = new ValidateCreditcardService();
             success = vccs.validate(cc);
-            
+            //con.close();
         } catch (JMSException ex) {
-            java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, "Stuk", ex);
+            java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NamingException ex) {
-            java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, "Stuk", ex);
+            java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+            
+            
             
             
             

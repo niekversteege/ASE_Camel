@@ -52,7 +52,7 @@ http://www.springframework.org/schema/oxm/spring-oxm-1.5.xsd http://www.springfr
         class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
         <property name="schemaCollection" ref="schemaCollection" />
         <property name="portTypeName" value="Service" />
-        <property name="locationUri" value="http://localhost:8080/Dare2Date_JMS/ApplyRegistrationService" />
+        <property name="locationUri" value="http://localhost:8084/ApplyRegistrationService" />
         <property name="targetNamespace"
             value="http://www.han.nl/schemas/applyregistrationservice/definitions" />
     </bean>
