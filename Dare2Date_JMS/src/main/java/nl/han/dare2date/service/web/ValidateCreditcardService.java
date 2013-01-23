@@ -25,6 +25,10 @@ public class ValidateCreditcardService extends Replier implements Queues {
     }
 
     public boolean validate(Creditcard cc) {
+        
+        // make mock service that represents CC company
+        // make mock hashmap with valid ccnumber and cvc?
+                
         return true;
     }
 
