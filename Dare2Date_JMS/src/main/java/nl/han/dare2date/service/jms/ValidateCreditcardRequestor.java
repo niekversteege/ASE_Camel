@@ -11,12 +11,13 @@ import javax.jms.ObjectMessage;
 import javax.naming.NamingException;
 import nl.han.dare2date.service.jms.util.Requestor;
 
-public class ValidateCreditcardRequestor extends Requestor{
-    public ValidateCreditcardRequestor(Connection connection, String requestQueue, String replyQueue, String invalidQueue) 
+public class ValidateCreditcardRequestor extends Requestor {
+
+    public ValidateCreditcardRequestor(Connection connection, String requestQueue, String replyQueue, String invalidQueue)
             throws JMSException, NamingException {
         super(connection, requestQueue, replyQueue, invalidQueue);
     }
-    
+
     @Override
     public ObjectMessage getObjectMessage() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -26,5 +27,4 @@ public class ValidateCreditcardRequestor extends Requestor{
     public Serializable getResponse() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }

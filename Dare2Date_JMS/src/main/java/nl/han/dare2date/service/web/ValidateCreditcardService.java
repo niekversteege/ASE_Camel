@@ -10,19 +10,17 @@ import nl.han.dare2date.service.jms.util.Queues;
 import nl.han.dare2date.service.jms.util.Replier;
 
 /**
- * 
+ *
  * @author mdkr
  *
  * Is used as a JMS client using request-reply
  */
-public class ValidateCreditcardService extends Replier implements Queues{
+public class ValidateCreditcardService extends Replier implements Queues {
 
-    
     /**
      *
      */
-    
-public ValidateCreditcardService()throws JMSException, NamingException {
+    public ValidateCreditcardService() throws JMSException, NamingException {
         super(JMSUtil.getConnection(), REQUEST_QUEUE, INVALID_QUEUE);
     }
 

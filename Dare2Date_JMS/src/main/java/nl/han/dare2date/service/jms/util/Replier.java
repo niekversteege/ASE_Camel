@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 public abstract class Replier implements MessageListener {
 
     private final Logger log = Logger.getLogger(getClass().getName());
-    
     private Session session;
     private MessageProducer invalidProducer;
 

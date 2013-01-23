@@ -7,7 +7,8 @@ import java.util.Observer;
  * <p/>
  * Example usage:
  * <p/>
- * <pre>
+ * <
+ * pre>
  *
  * </pre>
  *
@@ -15,5 +16,6 @@ import java.util.Observer;
  * @version Copyright (c) 2012 HAN University, All rights reserved.
  */
 public abstract class DurableObserver implements Observer {
+
     public abstract String getSubscriberName();
 }
