@@ -42,6 +42,7 @@ public class Subscriber {
 
         initContext();
         initTopicConnectionFactory(topicString);
+        initTopic(topicString);
         initConnection();
     }
 
