@@ -56,18 +56,19 @@ public class ApplyRegistrationServiceEndpoint {
             java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
-        
+        if (success) {
+          notifyEveryone(req.getRegistration());  
+        }        
         
         response.setRegistration(req.getRegistration());
         response.getRegistration().setSuccesFul(success);
         return response;
     }
 
-    private void notifyEveryone(Registration reg) {
+    private void notifyEveryone(Registration registration) {
         try {
             ConfirmRegistrationService confirm = new ConfirmRegistrationService();
-            confirm.confirm(reg);
+            confirm.confirm(registration);
 
         } catch (JMSException | NamingException ex) {
             log.error(ex.toString(), ex);
