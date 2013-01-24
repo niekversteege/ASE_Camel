@@ -1,6 +1,5 @@
 package nl.han.dare2date.service.web;
 
-import java.util.logging.Level;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -33,33 +32,30 @@ public class ApplyRegistrationServiceEndpoint {
     @PayloadRoot(localPart = "ApplyRegistrationRequest", namespace = "http://www.han.nl/schemas/messages")
     public ApplyRegistrationResponse applyRegistration(ApplyRegistrationRequest req) {
         boolean success = false;
-        System.out.println("Yz: REQUEST");
         ApplyRegistrationResponse response = new ApplyRegistrationResponse();
-        
+
         Creditcard cc = req.getRegistration().getUser().getCard();
 
         //check if valid
         try {
             log.debug("Probeer request::");
             Connection c = JMSUtil.getConnection();
-             ValidateCreditcardRequestor vcr = new ValidateCreditcardRequestor(
+            ValidateCreditcardRequestor vcr = new ValidateCreditcardRequestor(
                     c, Queues.REQUEST_QUEUE,
                     Queues.REPLY_QUEUE, Queues.INVALID_QUEUE, cc);
-             vcr.send();
-             vcr.receiveSync();
-             success = Boolean.parseBoolean( vcr.getResponse().toString() );
-             c.close();
+            vcr.send();
+            vcr.receiveSync();
+            success = Boolean.parseBoolean(vcr.getResponse().toString());
+            c.close();
 
-        } catch (JMSException ex) {
-            java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NamingException ex) {
-            java.util.logging.Logger.getLogger(ApplyRegistrationServiceEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException | JMSException ex) {
+            log.error("Error on request: " + ex.toString(), ex);
         }
 
         if (success) {
-          notifyEveryone(req.getRegistration());  
-        }        
-        
+            notifyEveryone(req.getRegistration());
+        }
+
         response.setRegistration(req.getRegistration());
         response.getRegistration().setSuccesFul(success);
         return response;
@@ -71,7 +67,7 @@ public class ApplyRegistrationServiceEndpoint {
             confirm.confirm(registration);
 
         } catch (JMSException | NamingException ex) {
-            log.error(ex.toString(), ex);
+            log.error("Error calling Confirm on service: " + ex.toString(), ex);
         }
     }
 }
