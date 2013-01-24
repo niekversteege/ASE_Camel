@@ -29,8 +29,8 @@ public class ValidateCreditcardRequestor extends Requestor {
         ObjectMessage message = null;
         try {
             message = getSession().createObjectMessage();
-            int[] content = {creditcard.getCvc(), creditcard.getNumber()};
-            message.setObject(content);
+            //int[] content = {creditcard.getCvc(), creditcard.getNumber()};
+            message.setObject(creditcard);
         } catch (JMSException ex) {
             log.error("Error getting ObjectMessage: " + ex.toString(), ex);
         }

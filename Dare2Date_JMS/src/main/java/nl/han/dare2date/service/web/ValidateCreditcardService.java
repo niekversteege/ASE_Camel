@@ -18,22 +18,22 @@ import org.apache.log4j.Logger;
  * Is used as a JMS client using request-reply
  */
 public class ValidateCreditcardService extends Replier implements Queues {
-    
+
     private final Logger log = Logger.getLogger(getClass().getName());
     private boolean lastvalid;
-    
+
     public ValidateCreditcardService() throws JMSException, NamingException {
         super(JMSUtil.getConnection(), REQUEST_QUEUE, INVALID_QUEUE);
     }
-    
+
     public ValidateCreditcardService(Connection c) throws JMSException, NamingException {
         super(c, REQUEST_QUEUE, INVALID_QUEUE);
     }
-    
+
     public boolean validateCreditcard(Creditcard cc) {
         return (cc.getCvc() == 1234 && cc.getNumber() == 5678);
     }
-    
+
     @Override
     public ObjectMessage getReplyMessage() {
         try {
@@ -41,20 +41,20 @@ public class ValidateCreditcardService extends Replier implements Queues {
             m = getSession().createObjectMessage();
             m.setObject(lastvalid);
             return m;
-            
+
         } catch (JMSException ex) {
             log.error("Error creating reply: " + ex.toString(), ex);
         }
         return null;
     }
-    
+
     @Override
     public void handleMessage(Serializable contents) {
-        Creditcard cc = new Creditcard();
-        int[] temp = (int[]) contents;
-        cc.setCvc(temp[0]);
-        cc.setNumber(temp[1]);
+        Creditcard cc = (Creditcard) contents;
+        //int[] temp = (int[]) contents;
+        //cc.setCvc(temp[0]);
+        //cc.setNumber(temp[1]);
         lastvalid = validateCreditcard(cc);
-        
+
     }
 }
