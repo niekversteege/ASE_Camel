@@ -46,7 +46,6 @@ public class SubscriberMessageListener implements MessageListener {
         } catch (JMSException ex) {
             log.error("Error reading ObjectMessage: " + ex.toString(), ex);
         }
-        log.debug("\t");
     }
     
     private void printMessage(TextMessage textMessage) {
