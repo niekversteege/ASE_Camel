@@ -14,18 +14,20 @@ import org.apache.log4j.Logger;
  *
  * Is used as a JMS publisher
  */
-public class ConfirmRegistrationService extends SubjectGateway implements Topics {
+public class ConfirmRegistrationService extends SubjectGateway {
 
     public ConfirmRegistrationService() throws JMSException, NamingException {
-        super(REGISTRATION_CONFIRMATION_TOPIC);
+        super(Topics.REGISTRATION_CONFIRMATION_TOPIC);
     }
     private final Logger log = Logger.getLogger(getClass().getName());
     private static final String notifyMessage = "Registration Succesful";
 
     public void confirm(Registration reg) throws JMSException {
 
-        // andere dingen doen na confirmatie? geen idee
+        log.info("Confirming new registration.");
         String message = notifyMessage + " " + createUserString(reg.getUser());
+
+        log.info("Calling notifyObservers with message: \n\t" + message);
         notifyObservers(message);
     }
 
